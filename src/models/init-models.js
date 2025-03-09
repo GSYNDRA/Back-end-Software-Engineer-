@@ -1,5 +1,6 @@
 import _sequelize from "sequelize";
 const DataTypes = _sequelize.DataTypes;
+import _User from  "./User.js";
 import _categories from  "./categories.js";
 import _export_products from  "./export_products.js";
 import _export_shelfs from  "./export_shelfs.js";
@@ -12,11 +13,11 @@ import _roles from  "./roles.js";
 import _shelf_products from  "./shelf_products.js";
 import _shelves from  "./shelves.js";
 import _suppliers from  "./suppliers.js";
-import _users from  "./users.js";
 import _warehouse_products from  "./warehouse_products.js";
 import _warehouses from  "./warehouses.js";
 
 export default function initModels(sequelize) {
+  const User = _User.init(sequelize, DataTypes);
   const categories = _categories.init(sequelize, DataTypes);
   const export_products = _export_products.init(sequelize, DataTypes);
   const export_shelfs = _export_shelfs.init(sequelize, DataTypes);
@@ -29,7 +30,6 @@ export default function initModels(sequelize) {
   const shelf_products = _shelf_products.init(sequelize, DataTypes);
   const shelves = _shelves.init(sequelize, DataTypes);
   const suppliers = _suppliers.init(sequelize, DataTypes);
-  const users = _users.init(sequelize, DataTypes);
   const warehouse_products = _warehouse_products.init(sequelize, DataTypes);
   const warehouses = _warehouses.init(sequelize, DataTypes);
 
@@ -41,6 +41,8 @@ export default function initModels(sequelize) {
   products.belongsToMany(warehouses, { as: 'warehouse_id_warehouses', through: warehouse_products, foreignKey: "product_id", otherKey: "warehouse_id" });
   shelves.belongsToMany(products, { as: 'product_id_products_shelf_products', through: shelf_products, foreignKey: "shelf_id", otherKey: "product_id" });
   warehouses.belongsToMany(products, { as: 'product_id_products_warehouse_products', through: warehouse_products, foreignKey: "warehouse_id", otherKey: "product_id" });
+  orders.belongsTo(User, { as: "user", foreignKey: "user_id"});
+  User.hasMany(orders, { as: "orders", foreignKey: "user_id"});
   products.belongsTo(categories, { as: "category", foreignKey: "category_id"});
   categories.hasMany(products, { as: "products", foreignKey: "category_id"});
   shelves.belongsTo(categories, { as: "category", foreignKey: "category_id"});
@@ -61,16 +63,14 @@ export default function initModels(sequelize) {
   products.hasMany(shelf_products, { as: "shelf_products", foreignKey: "product_id"});
   warehouse_products.belongsTo(products, { as: "product", foreignKey: "product_id"});
   products.hasMany(warehouse_products, { as: "warehouse_products", foreignKey: "product_id"});
-  users.belongsTo(roles, { as: "role", foreignKey: "role_id"});
-  roles.hasMany(users, { as: "users", foreignKey: "role_id"});
+  User.belongsTo(roles, { as: "role", foreignKey: "role_id"});
+  roles.hasMany(User, { as: "Users", foreignKey: "role_id"});
   export_shelfs.belongsTo(shelves, { as: "shelf", foreignKey: "shelf_id"});
   shelves.hasMany(export_shelfs, { as: "export_shelves", foreignKey: "shelf_id"});
   shelf_products.belongsTo(shelves, { as: "shelf", foreignKey: "shelf_id"});
   shelves.hasMany(shelf_products, { as: "shelf_products", foreignKey: "shelf_id"});
   imports.belongsTo(suppliers, { as: "supplier", foreignKey: "supplier_id"});
   suppliers.hasMany(imports, { as: "imports", foreignKey: "supplier_id"});
-  orders.belongsTo(users, { as: "user", foreignKey: "user_id"});
-  users.hasMany(orders, { as: "orders", foreignKey: "user_id"});
   exports.belongsTo(warehouses, { as: "warehouse", foreignKey: "warehouse_id"});
   warehouses.hasMany(exports, { as: "exports", foreignKey: "warehouse_id"});
   imports.belongsTo(warehouses, { as: "warehouse", foreignKey: "warehouse_id"});
@@ -79,6 +79,7 @@ export default function initModels(sequelize) {
   warehouses.hasMany(warehouse_products, { as: "warehouse_products", foreignKey: "warehouse_id"});
 
   return {
+    User,
     categories,
     export_products,
     export_shelfs,
@@ -91,7 +92,6 @@ export default function initModels(sequelize) {
     shelf_products,
     shelves,
     suppliers,
-    users,
     warehouse_products,
     warehouses,
   };

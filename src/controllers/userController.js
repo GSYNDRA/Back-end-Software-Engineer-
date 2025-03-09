@@ -10,7 +10,7 @@ let Op = Sequelize.Op;
 export const getProfile = async (req, res) => {
   try {
     let { user_id } = req.params;
-    let data = await model.users.findOne({
+    let data = await model.User.findOne({
       where: { user_id },
       include: ["role"],
     });
@@ -41,7 +41,7 @@ export const updateProfile = async (req, res) => {
       return responseData(res, "Invalid email address", "", 400);
     }
 
-    let getNewProfile = await model.users.findOne({
+    let getNewProfile = await model.User.findOne({
       where: {
         user_id,
       },
@@ -51,12 +51,12 @@ export const updateProfile = async (req, res) => {
     getNewProfile.email = email;
     getNewProfile.full_name = full_name;
 
-    await model.users.update(getNewProfile.dataValues, {
+    await model.User.update(getNewProfile.dataValues, {
       where: {
         user_id,
       },
     });
-    let data = await model.users.findOne({
+    let data = await model.User.findOne({
       where: {
         user_id,
       },
@@ -153,7 +153,7 @@ export const getOrder = async (req, res) => {
         attributes: ["product_id", "product_name"],
       },
       {
-        model: model.users,
+        model: model.User,
         as: "user",
       },
     ],

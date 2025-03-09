@@ -85,7 +85,7 @@ export const getInfoDashboard = async (req, res) => {
     };
 
     // Count users with role_id = 2 (Customer)
-    const customers = await model.users.count({
+    const customers = await model.User.count({
       where: { role_id: 2 },
     });
 

@@ -11,7 +11,7 @@ export default class shelves extends Model {
       primaryKey: true
     },
     quantity: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     category_id: {

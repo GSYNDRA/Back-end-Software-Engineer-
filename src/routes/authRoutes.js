@@ -1,7 +1,10 @@
 import express from "express";
 import { login, signup } from "../controllers/authController.js";
+import AuthController from '../controllers/authController.js';
+import { verifyToken } from '../config/jwt.js';
 
 const authRoutes = express.Router();
+
 
 /**
  * @swagger
@@ -40,7 +43,7 @@ const authRoutes = express.Router();
  *       400:
  *         description: Invalid input
  */
-authRoutes.post("/login", login);
+// authRoutes.post("/login", login);
 
 /**
  * @swagger
@@ -74,6 +77,22 @@ authRoutes.post("/login", login);
  *       400:
  *         description: Invalid input
  */
-authRoutes.post("/signup", signup);
+// authRoutes.post("/signup", signup);
+
+authRoutes.post('/signup', AuthController.signup);
+authRoutes.post('/reset-verification-token', AuthController.resetVerificationToken);
+authRoutes.post('/verify-account', AuthController.verifyEmail);
+
+authRoutes.post('/login', AuthController.login);
+authRoutes.post('/logout', AuthController.logout);
+authRoutes.post('/refresh-token', AuthController.refreshToken);
+
+authRoutes.post('/forgot-password', AuthController.forgetPassword);
+authRoutes.post('/reset-forgot-password-token', AuthController.resetForgotPasswordToken);
+
+authRoutes.post('/reset-password', AuthController.resetPassword);
+
+authRoutes.post('/change-password',verifyToken, AuthController.changePassword);
+authRoutes.post('/verify-code-number',AuthController.verifyResetOrVerificationToken);
 
 export default authRoutes;

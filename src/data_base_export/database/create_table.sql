@@ -1,4 +1,3 @@
-CREATE DATABASE db_manach;
 
 USE db_manach;
 

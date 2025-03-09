@@ -1,7 +1,7 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class users extends Model {
+export default class User extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     user_id: {
@@ -14,7 +14,7 @@ export default class users extends Model {
       type: DataTypes.STRING(255),
       allowNull: false
     },
-    user_password: {
+    password: {
       type: DataTypes.STRING(255),
       allowNull: false
     },
@@ -41,10 +41,31 @@ export default class users extends Model {
     bank_account: {
       type: DataTypes.STRING(255),
       allowNull: true
+    },
+    refresh_token: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    lastLogin: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    verificationTokenExpiresAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    verificationToken: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: 0
     }
   }, {
     sequelize,
-    tableName: 'users',
+    tableName: 'User',
     timestamps: false,
     indexes: [
       {
