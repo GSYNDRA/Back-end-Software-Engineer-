@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
-import initModels from "../models/init-models.js";
-import sequelize from "../config/database.js";
 import crypto from "crypto";
 import { Op } from 'sequelize'; // Import Op từ Sequelize
 import jwt from "jsonwebtoken";
-
+import initModels from "../models/init-models.js";
+import sequelize from "../models/connect.js";
+import { responseData } from "../config/response.js";
 import {
   checkRefToken,
   checkToken,
@@ -23,7 +23,8 @@ import Joi from "joi";
 
 let model = initModels(sequelize);
 
-export const signupService = async (full_name,
+export const signupService = async (
+    full_name,
     address,
     user_name,
     bank_account,
@@ -31,60 +32,31 @@ export const signupService = async (full_name,
     phone,
     email) => {
 
-  //         // Validate bank account
-  // if (!/^[a-zA-Z\s]+-\d+$/.test(bank_account)) {
-  //   return responseData(res, "Invalid bank account format", "", 400);
+  // let checkUser = await model.User.findOne({
+  //   where: {
+  //       email,
+  //   },
+  // });
+
+  // if (checkUser) {
+  //   return responseData(res, "email already exists", "", 400);
   // }
 
-  // // Validate user password (must contain uppercase, lowercase, digit, and special character)
-  // if (
-  //   !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}/.test(
-  //     user_password
-  //   )
-  // ) {
-  //   return responseData(
-  //     res,
-  //     "Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and be at least 8 characters long",
-  //     "",
-  //     400
-  //   );
-  // }
+  // //hash the pass
+  // let hashedPassword = bcrypt.hashSync(password, 10);
 
-  // // Validate phone number (assuming phone number should be exactly 10 digits)
-  // if (!/^\d{10}$/.test(phone)) {
-  //   return responseData(res, "Invalid phone number format", "", 400);
-  // }
+  // let newData = {
+  //   full_name,
+  //   address,
+  //   user_name,
+  //   bank_account,
+  //   password: hashedPassword,
+  //   phone,
+  //   email,
+  //   role_id: 2,
+  // };
 
-  // // Validate email address
-  // if (!/^\S+@\S+\.\S+$/.test(email)) {
-  //   return responseData(res, "Invalid email address", "", 400);
-  // }
-
-  let checkUser = await model.User.findOne({
-    where: {
-        email,
-    },
-  });
-
-  if (checkUser) {
-    return responseData(res, "email already exists", "", 400);
-  }
-
-  //hash the pass
-  let hashedPassword = bcrypt.hashSync(user_password, 10);
-
-  let newData = {
-    full_name,
-    address,
-    user_name,
-    bank_account,
-    user_password: hashedPassword,
-    phone,
-    email,
-    role_id: 2,
-  };
-
-  await model.User.create(newData);
+  // await model.User.create(newData);
 
   // Partial schema for initial email and password validation
   const initialSchema = Joi.object({
@@ -135,39 +107,14 @@ export const signupService = async (full_name,
       }
     }
 
-    // // If email does not exist, validate remaining fields for new account creation
-    // const fullSchema = Joi.object({
-    //   // role_id: Joi.number().integer().min(1).max(3).required(),
-    //   user_name: Joi.string().min(3).max(50).required(),
-    //   phone: Joi.string().pattern(/^[0-9]+$/).min(10).max(15).required(),
-    //   email: Joi.string().email().required(),
-    //   password: Joi.string()
-    //     .min(8)
-    //     .pattern(new RegExp("^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])"))
-    //     .required(),
-    //   other: Joi.alternatives().conditional("role_id", {
-    //     switch: [
-    //       { is: 1, then: Joi.string().required().messages({ "any.required": "Address is required for Parent role" }) },
-    //       { is: 2, then: Joi.string().required().messages({ "any.required": "License number is required for Driver role" }) },
-    //       { is: 3, then: Joi.string().required().messages({ "any.required": "Department is required for Teacher role" }) },
-    //     ],
-    //     otherwise: Joi.forbidden(),
-    //   }),
-    //   relationship: Joi.string()
-    //     .valid("Father", "Mother", "Other")
-    //     .when("role_id", { is: 1, then: Joi.required(), otherwise: Joi.forbidden() }),
-    // });
-
     const fullSchema = Joi.object({
       full_name: Joi.string().min(3).max(100).required(),
       address: Joi.string().min(5).max(200).required(),
       user_name: Joi.string().min(3).max(50).required(),
       bank_account: Joi.string()
-        .pattern(/^[0-9]+$/)
-        .min(10)
-        .max(20)
+        .pattern(/^[A-Za-z]+-\d+$/)
         .required()
-        .messages({ "string.pattern.base": "Bank account must contain only numbers" }),
+        .messages({ "string.pattern.base": "Bank account is not valid" }),
       phone: Joi.string()
         .pattern(/^[0-9]+$/)
         .min(10)

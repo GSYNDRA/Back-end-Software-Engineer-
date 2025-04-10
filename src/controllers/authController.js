@@ -1,9 +1,6 @@
-// import { responseData } from "../config/response.js";
-// import initModels from "../models/init-models.js";
-// import sequelize from "../models/connect.js";
+
 // import bcrypt from "bcrypt";
 
-// let model = initModels(sequelize);
 
 // export const login = async (req, res) => {
 //   let { user_name, user_password } = req.body;
